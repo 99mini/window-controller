@@ -1,0 +1,81 @@
+:root {
+  color-scheme: dark;
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
+  background:
+    radial-gradient(circle at top, rgba(86, 122, 255, 0.24), transparent 35%),
+    linear-gradient(180deg, #111722 0%, #0a0f16 100%);
+  color: #f4f7fb;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: transparent;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.app-shell {
+  display: grid;
+  gap: 16px;
+  padding: 20px;
+}
+
+.panel,
+.touchpad,
+.button-row button {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 18px;
+  backdrop-filter: blur(16px);
+}
+
+.panel {
+  padding: 16px;
+}
+
+.panel label {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.panel input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.25);
+  color: inherit;
+}
+
+.actions,
+.button-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.button-row button,
+.actions button {
+  min-height: 56px;
+  border: 0;
+  color: inherit;
+  background: linear-gradient(180deg, rgba(100, 148, 255, 0.36), rgba(39, 67, 119, 0.6));
+}
+
+.touchpad {
+  min-height: 42vh;
+  display: grid;
+  place-items: center;
+  touch-action: none;
+  user-select: none;
+}
+

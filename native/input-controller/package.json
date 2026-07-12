@@ -1,0 +1,16 @@
+{
+  "name": "@window-controller/input-controller",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "node-gyp rebuild",
+    "check": "node -e \"console.log('No static check configured for native addon')\""
+  },
+  "gypfile": true,
+  "dependencies": {
+    "node-addon-api": "^8.1.0"
+  },
+  "devDependencies": {
+    "node-gyp": "^11.0.0"
+  }
+}
