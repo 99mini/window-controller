@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "install": "node ./scripts/install.js",
     "build": "node-gyp rebuild",
     "check": "node -e \"console.log('No static check configured for native addon')\""
   },
