@@ -1,1 +1,3 @@
-paired-devices.json
+out/
+dist-electron/
+.data/

@@ -11,6 +11,23 @@ import {
 } from "@window-controller/protocol";
 import { loadInputDriver } from "./input-driver.js";
 import { getPairedDevices, savePairedDevice } from "./storage.js";
+import type { ServerState } from "../shared/types.js";
+
+export type { ServerState };
+
+type StateChangeListener = (state: ServerState) => void;
+
+export interface ServerController {
+  getState(): ServerState;
+  on(event: "stateChange", cb: StateChangeListener): void;
+  off(event: "stateChange", cb: StateChangeListener): void;
+}
+
+export interface StartServerOptions {
+  mobilePath?: string;
+  dataDir?: string;
+  addonPath?: string;
+}
 
 const PORT = Number(process.env.PORT ?? "4580");
 const HOST = process.env.HOST ?? "0.0.0.0";
@@ -32,10 +49,7 @@ function getLocalIpv4(): string[] {
 }
 
 function isPrivateAddress(address: string | undefined): boolean {
-  if (!address) {
-    return false;
-  }
-
+  if (!address) return false;
   const normalized = address.replace("::ffff:", "");
   return (
     normalized.startsWith("10.") ||
@@ -46,25 +60,38 @@ function isPrivateAddress(address: string | undefined): boolean {
   );
 }
 
-export async function startServer(): Promise<void> {
+export async function startServer(
+  options: StartServerOptions = {},
+): Promise<ServerController> {
+  const { mobilePath, dataDir = process.cwd(), addonPath } = options;
+
   const app = express();
   const server = http.createServer(app);
   const wss = new WebSocketServer({ server, path: "/ws" });
-  const driver = loadInputDriver();
+  const driver = loadInputDriver(addonPath);
+
   let pairCode = generatePairCode();
   let connectedDeviceName: string | undefined;
+  const listeners = new Set<StateChangeListener>();
+
+  function currentState(): ServerState {
+    return {
+      pairCode,
+      connectedDevice: connectedDeviceName,
+      addresses: getLocalIpv4(),
+      port: PORT,
+      hostName: os.hostname(),
+    };
+  }
+
+  function emitStateChange(): void {
+    const state = currentState();
+    for (const cb of listeners) cb(state);
+  }
 
   app.use(express.json());
-
-  app.get("/api/state", (_req, res) => {
-    res.json({
-      hostName: os.hostname(),
-      pairCode,
-      port: PORT,
-      addresses: getLocalIpv4(),
-      connectedDevice: connectedDeviceName,
-    });
-  });
+  app.get("/api/state", (_req, res) => { res.json(currentState()); });
+  if (mobilePath) app.use(express.static(mobilePath));
 
   wss.on("connection", async (socket, request) => {
     if (!isPrivateAddress(request.socket.remoteAddress)) {
@@ -73,8 +100,7 @@ export async function startServer(): Promise<void> {
     }
 
     let authenticatedDeviceId: string | null = null;
-    const send = (message: ServerMessage) =>
-      socket.send(JSON.stringify(message));
+    const send = (message: ServerMessage) => socket.send(JSON.stringify(message));
 
     send({
       type: "server_state",
@@ -86,12 +112,8 @@ export async function startServer(): Promise<void> {
 
     socket.on("message", async (raw) => {
       let parsed: unknown;
-      try {
-        parsed = JSON.parse(String(raw));
-      } catch {
-        send({ type: "error", message: "Invalid JSON" });
-        return;
-      }
+      try { parsed = JSON.parse(String(raw)); }
+      catch { send({ type: "error", message: "Invalid JSON" }); return; }
 
       if (!isClientMessage(parsed)) {
         send({ type: "error", message: "Invalid message shape" });
@@ -100,53 +122,39 @@ export async function startServer(): Promise<void> {
 
       const message = parsed as ClientMessage;
 
-      if (message.type === "ping") {
-        send({ type: "pong" });
-        return;
-      }
+      if (message.type === "ping") { send({ type: "pong" }); return; }
 
       if (message.type === "pair_request") {
         if (message.pairCode !== pairCode) {
-          send({
-            type: "pair_result",
-            ok: false,
-            message: "Invalid pair code",
-          });
+          send({ type: "pair_result", ok: false, message: "Invalid pair code" });
           return;
         }
-
         const deviceId = nanoid(12);
         const token = nanoid(32);
-        await savePairedDevice({
-          deviceId,
-          deviceName: message.deviceName,
-          token,
-          pairedAt: new Date().toISOString(),
-        });
+        await savePairedDevice(
+          { deviceId, deviceName: message.deviceName, token, pairedAt: new Date().toISOString() },
+          dataDir,
+        );
         authenticatedDeviceId = deviceId;
         connectedDeviceName = message.deviceName;
         pairCode = generatePairCode();
+        emitStateChange();
         send({ type: "pair_result", ok: true, deviceId, token });
         return;
       }
 
       if (message.type === "auth") {
-        const pairedDevices = await getPairedDevices();
-        const device = pairedDevices.find(
-          (entry) =>
-            entry.deviceId === message.deviceId &&
-            entry.token === message.token,
+        const devices = await getPairedDevices(dataDir);
+        const device = devices.find(
+          (e) => e.deviceId === message.deviceId && e.token === message.token,
         );
         if (!device) {
-          send({
-            type: "auth_result",
-            ok: false,
-            message: "Authentication failed",
-          });
+          send({ type: "auth_result", ok: false, message: "Authentication failed" });
           return;
         }
         authenticatedDeviceId = device.deviceId;
         connectedDeviceName = device.deviceName;
+        emitStateChange();
         send({ type: "auth_result", ok: true });
         return;
       }
@@ -157,42 +165,29 @@ export async function startServer(): Promise<void> {
       }
 
       switch (message.type) {
-        case "mouse_move":
-          driver.moveMouse(message.dx, message.dy);
-          break;
-        case "mouse_button":
-          driver.mouseButton(message.button, message.action);
-          break;
-        case "scroll":
-          driver.scroll(message.deltaX, message.deltaY);
-          break;
+        case "mouse_move": driver.moveMouse(message.dx, message.dy); break;
+        case "mouse_button": driver.mouseButton(message.button, message.action); break;
+        case "scroll": driver.scroll(message.deltaX, message.deltaY); break;
         case "key":
-          driver.keyPress(
-            message.key,
-            message.action,
-            message.modifiers ?? ([] as ModifierKey[]),
-          );
+          driver.keyPress(message.key, message.action, message.modifiers ?? ([] as ModifierKey[]));
           break;
-        case "text":
-          driver.textInput(message.value);
-          break;
+        case "text": driver.textInput(message.value); break;
       }
     });
 
     socket.on("close", () => {
       connectedDeviceName = undefined;
+      emitStateChange();
     });
   });
 
-  await new Promise<void>((resolve) => {
-    server.listen(PORT, HOST, () => resolve());
-  });
+  await new Promise<void>((resolve) => { server.listen(PORT, HOST, () => resolve()); });
 
-  const addresses = getLocalIpv4();
-  console.log("Remote Controller running");
-  console.log(`Host name: ${os.hostname()}`);
-  console.log(`Pair code: ${pairCode}`);
-  for (const address of addresses) {
-    console.log(`Open: http://${address}:${PORT}`);
-  }
+  console.log(`Window Controller server running on :${PORT}`);
+
+  return {
+    getState: currentState,
+    on(_event, cb) { listeners.add(cb); },
+    off(_event, cb) { listeners.delete(cb); },
+  };
 }

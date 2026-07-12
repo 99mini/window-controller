@@ -1,0 +1,26 @@
+appId: com.window-controller.desktop
+productName: Window Controller
+
+directories:
+  output: dist-electron
+
+files:
+  - out/**/*
+  - node_modules/**/*
+  - package.json
+
+extraResources:
+  - from: ../../native/input-controller/build/Release/input_controller.node
+    to: native/input_controller.node
+  - from: ../../apps/mobile/dist
+    to: mobile
+
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true

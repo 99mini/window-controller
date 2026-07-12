@@ -8,6 +8,7 @@
     "dev": "pnpm run dev:desktop & pnpm run dev:mobile",
     "dev:mobile": "pnpm --filter @window-controller/mobile dev",
     "dev:desktop": "pnpm --filter @window-controller/desktop dev",
+    "dist": "pnpm --filter @window-controller/mobile build && pnpm --filter @window-controller/desktop dist",
     "check": "pnpm -r check"
   }
 }

@@ -1,0 +1,137 @@
+:root {
+  color-scheme: dark;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  background: linear-gradient(160deg, #111722 0%, #0a0f16 100%);
+  color: #f4f7fb;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  background: transparent;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+}
+
+.app-header {
+  text-align: center;
+  padding: 4px 0 8px;
+}
+
+.app-header h1 {
+  font-size: 1.35rem;
+  font-weight: 600;
+}
+
+.hostname {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.4);
+  margin-top: 4px;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 14px 16px;
+}
+
+.card h2 {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.4);
+  margin-bottom: 10px;
+}
+
+.pair-code {
+  font-size: 2.4rem;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  color: #8fa8ff;
+  font-variant-numeric: tabular-nums;
+}
+
+.device-name {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.device-name.connected::before {
+  content: "● ";
+  color: #4caf7d;
+  font-size: 0.75rem;
+}
+
+.muted {
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 0.9rem;
+}
+
+.qr-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.qr-image {
+  width: 160px;
+  height: 160px;
+  border-radius: 8px;
+  background: #fff;
+  padding: 6px;
+}
+
+.qr-placeholder {
+  width: 160px;
+  height: 160px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  color: rgba(255, 255, 255, 0.25);
+  font-size: 0.85rem;
+}
+
+.address-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.address-btn {
+  width: 100%;
+  background: rgba(86, 122, 255, 0.12);
+  border: 1px solid rgba(86, 122, 255, 0.25);
+  border-radius: 8px;
+  color: #8fa8ff;
+  padding: 6px 12px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.82rem;
+  text-align: left;
+}
+
+.address-btn:hover {
+  background: rgba(86, 122, 255, 0.22);
+}
+
+.loading {
+  display: grid;
+  place-items: center;
+  height: 100vh;
+  color: rgba(255, 255, 255, 0.35);
+}
