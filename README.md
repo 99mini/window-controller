@@ -36,5 +36,4 @@ pnpm install
 pnpm build
 ```
 
-Copy the produced addon into `apps/desktop/native/` or wire an automated copy step.
-
+The desktop server will automatically load `native/input-controller/build/Release/input_controller.node` on Windows.

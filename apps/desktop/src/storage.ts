@@ -31,9 +31,14 @@ export async function getPairedDevices(): Promise<PairedDevice[]> {
 
 export async function savePairedDevice(device: PairedDevice): Promise<void> {
   const store = await readStore();
-  const nextDevices = store.devices.filter((entry) => entry.deviceId !== device.deviceId);
+  const nextDevices = store.devices.filter(
+    (entry) => entry.deviceId !== device.deviceId,
+  );
   nextDevices.push(device);
   await mkdir(DATA_DIR, { recursive: true });
-  await writeFile(STORE_PATH, JSON.stringify({ devices: nextDevices }, null, 2), "utf8");
+  await writeFile(
+    STORE_PATH,
+    JSON.stringify({ devices: nextDevices }, null, 2),
+    "utf8",
+  );
 }
-

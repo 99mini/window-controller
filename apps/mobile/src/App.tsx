@@ -24,7 +24,9 @@ function loadStoredSession(): SessionState | null {
 }
 
 export function App() {
-  const [host, setHost] = useState(() => window.location.hostname || "192.168.0.10");
+  const [host, setHost] = useState(
+    () => window.location.hostname || "192.168.0.10",
+  );
   const [port, setPort] = useState("4580");
   const [deviceName, setDeviceName] = useState("My Phone");
   const [pairCode, setPairCode] = useState("");
@@ -63,7 +65,11 @@ export function App() {
 
       const session = sessionRef.current;
       if (session) {
-        sendMessage({ type: "auth", deviceId: session.deviceId, token: session.token });
+        sendMessage({
+          type: "auth",
+          deviceId: session.deviceId,
+          token: session.token,
+        });
       }
     });
 
@@ -73,8 +79,17 @@ export function App() {
         setServerName(message.hostName);
         setPort(String(message.port));
       }
-      if (message.type === "pair_result" && message.ok && message.deviceId && message.token) {
-        const nextSession = { deviceId: message.deviceId, token: message.token, deviceName };
+      if (
+        message.type === "pair_result" &&
+        message.ok &&
+        message.deviceId &&
+        message.token
+      ) {
+        const nextSession = {
+          deviceId: message.deviceId,
+          token: message.token,
+          deviceName,
+        };
         sessionRef.current = nextSession;
         localStorage.setItem(STORAGE_KEY, JSON.stringify(nextSession));
         setStatus("paired");
@@ -117,19 +132,31 @@ export function App() {
         <p>{status}</p>
         <label>
           Host
-          <input value={host} onChange={(event) => setHost(event.target.value)} />
+          <input
+            value={host}
+            onChange={(event) => setHost(event.target.value)}
+          />
         </label>
         <label>
           Port
-          <input value={port} onChange={(event) => setPort(event.target.value)} />
+          <input
+            value={port}
+            onChange={(event) => setPort(event.target.value)}
+          />
         </label>
         <label>
           Device name
-          <input value={deviceName} onChange={(event) => setDeviceName(event.target.value)} />
+          <input
+            value={deviceName}
+            onChange={(event) => setDeviceName(event.target.value)}
+          />
         </label>
         <label>
           Pair code
-          <input value={pairCode} onChange={(event) => setPairCode(event.target.value)} />
+          <input
+            value={pairCode}
+            onChange={(event) => setPairCode(event.target.value)}
+          />
         </label>
         <div className="actions">
           <button onClick={connect}>Connect</button>
@@ -141,7 +168,9 @@ export function App() {
       <section
         className="touchpad"
         onPointerDown={(event) => {
-          (event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
+          (event.currentTarget as HTMLElement).setPointerCapture(
+            event.pointerId,
+          );
         }}
         onPointerMove={(event) => {
           if (!event.pressure) {
@@ -155,24 +184,56 @@ export function App() {
           flushMovement(true);
         }}
         onDoubleClick={() => {
-          sendMessage({ type: "mouse_button", button: "left", action: "click" });
+          sendMessage({
+            type: "mouse_button",
+            button: "left",
+            action: "click",
+          });
         }}
       >
         <span>Touchpad</span>
       </section>
 
       <section className="button-row">
-        <button onClick={() => sendMessage({ type: "mouse_button", button: "left", action: "click" })}>
+        <button
+          onClick={() =>
+            sendMessage({
+              type: "mouse_button",
+              button: "left",
+              action: "click",
+            })
+          }
+        >
           Left Click
         </button>
-        <button onClick={() => sendMessage({ type: "mouse_button", button: "right", action: "click" })}>
+        <button
+          onClick={() =>
+            sendMessage({
+              type: "mouse_button",
+              button: "right",
+              action: "click",
+            })
+          }
+        >
           Right Click
         </button>
       </section>
 
       <section className="button-row">
-        <button onClick={() => sendMessage({ type: "scroll", deltaX: 0, deltaY: 120 })}>Scroll Up</button>
-        <button onClick={() => sendMessage({ type: "scroll", deltaX: 0, deltaY: -120 })}>Scroll Down</button>
+        <button
+          onClick={() =>
+            sendMessage({ type: "scroll", deltaX: 0, deltaY: 120 })
+          }
+        >
+          Scroll Up
+        </button>
+        <button
+          onClick={() =>
+            sendMessage({ type: "scroll", deltaX: 0, deltaY: -120 })
+          }
+        >
+          Scroll Down
+        </button>
       </section>
     </main>
   );

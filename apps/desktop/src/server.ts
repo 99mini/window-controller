@@ -7,7 +7,7 @@ import {
   isClientMessage,
   type ClientMessage,
   type ModifierKey,
-  type ServerMessage
+  type ServerMessage,
 } from "@window-controller/protocol";
 import { loadInputDriver } from "./input-driver.js";
 import { getPairedDevices, savePairedDevice } from "./storage.js";
@@ -17,7 +17,10 @@ const HOST = process.env.HOST ?? "0.0.0.0";
 const PAIR_CODE_LENGTH = 6;
 
 function generatePairCode(): string {
-  return String(Math.floor(Math.random() * 10 ** PAIR_CODE_LENGTH)).padStart(PAIR_CODE_LENGTH, "0");
+  return String(Math.floor(Math.random() * 10 ** PAIR_CODE_LENGTH)).padStart(
+    PAIR_CODE_LENGTH,
+    "0",
+  );
 }
 
 function getLocalIpv4(): string[] {
@@ -59,7 +62,7 @@ export async function startServer(): Promise<void> {
       pairCode,
       port: PORT,
       addresses: getLocalIpv4(),
-      connectedDevice: connectedDeviceName
+      connectedDevice: connectedDeviceName,
     });
   });
 
@@ -70,14 +73,15 @@ export async function startServer(): Promise<void> {
     }
 
     let authenticatedDeviceId: string | null = null;
-    const send = (message: ServerMessage) => socket.send(JSON.stringify(message));
+    const send = (message: ServerMessage) =>
+      socket.send(JSON.stringify(message));
 
     send({
       type: "server_state",
       hostName: os.hostname(),
       pairCode,
       port: PORT,
-      connectedDevice: connectedDeviceName
+      connectedDevice: connectedDeviceName,
     });
 
     socket.on("message", async (raw) => {
@@ -103,7 +107,11 @@ export async function startServer(): Promise<void> {
 
       if (message.type === "pair_request") {
         if (message.pairCode !== pairCode) {
-          send({ type: "pair_result", ok: false, message: "Invalid pair code" });
+          send({
+            type: "pair_result",
+            ok: false,
+            message: "Invalid pair code",
+          });
           return;
         }
 
@@ -113,7 +121,7 @@ export async function startServer(): Promise<void> {
           deviceId,
           deviceName: message.deviceName,
           token,
-          pairedAt: new Date().toISOString()
+          pairedAt: new Date().toISOString(),
         });
         authenticatedDeviceId = deviceId;
         connectedDeviceName = message.deviceName;
@@ -125,10 +133,16 @@ export async function startServer(): Promise<void> {
       if (message.type === "auth") {
         const pairedDevices = await getPairedDevices();
         const device = pairedDevices.find(
-          (entry) => entry.deviceId === message.deviceId && entry.token === message.token
+          (entry) =>
+            entry.deviceId === message.deviceId &&
+            entry.token === message.token,
         );
         if (!device) {
-          send({ type: "auth_result", ok: false, message: "Authentication failed" });
+          send({
+            type: "auth_result",
+            ok: false,
+            message: "Authentication failed",
+          });
           return;
         }
         authenticatedDeviceId = device.deviceId;
@@ -153,7 +167,11 @@ export async function startServer(): Promise<void> {
           driver.scroll(message.deltaX, message.deltaY);
           break;
         case "key":
-          driver.keyPress(message.key, message.action, message.modifiers ?? ([] as ModifierKey[]));
+          driver.keyPress(
+            message.key,
+            message.action,
+            message.modifiers ?? ([] as ModifierKey[]),
+          );
           break;
         case "text":
           driver.textInput(message.value);

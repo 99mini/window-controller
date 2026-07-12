@@ -68,7 +68,11 @@ input {
   min-height: 56px;
   border: 0;
   color: inherit;
-  background: linear-gradient(180deg, rgba(100, 148, 255, 0.36), rgba(39, 67, 119, 0.6));
+  background: linear-gradient(
+    180deg,
+    rgba(100, 148, 255, 0.36),
+    rgba(39, 67, 119, 0.6)
+  );
 }
 
 .touchpad {
@@ -78,4 +82,3 @@ input {
   touch-action: none;
   user-select: none;
 }
-

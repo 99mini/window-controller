@@ -93,4 +93,3 @@ export function isClientMessage(value: unknown): value is ClientMessage {
   const candidate = value as { type?: unknown };
   return typeof candidate.type === "string";
 }
-

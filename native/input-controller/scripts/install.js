@@ -7,7 +7,7 @@ if (process.platform !== "win32") {
 
 const result = spawnSync("node-gyp", ["rebuild"], {
   stdio: "inherit",
-  shell: true
+  shell: true,
 });
 
 process.exit(result.status ?? 1);

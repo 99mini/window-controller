@@ -9,4 +9,3 @@
     "check": "tsc -p tsconfig.json --noEmit"
   }
 }
-
