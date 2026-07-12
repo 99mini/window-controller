@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc -b && vite build",
     "check": "tsc -b --pretty false",
-    "dev": "vite"
+    "dev": "vite --host"
   },
   "dependencies": {
     "@window-controller/protocol": "workspace:*",
