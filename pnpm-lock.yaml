@@ -63,7 +63,7 @@ importers:
         specifier: ^18.3.1
         version: 18.3.1(react@18.3.1)
       typescript:
-        specifier: ^5.6.3
+        specifier: ^5.9.3
         version: 5.9.3
 
   apps/mobile:
@@ -88,7 +88,7 @@ importers:
         specifier: ^4.3.4
         version: 4.7.0(vite@5.4.21(@types/node@22.20.1))
       typescript:
-        specifier: ^5.6.3
+        specifier: ^5.9.3
         version: 5.9.3
       vite:
         specifier: ^5.4.11
@@ -104,7 +104,11 @@ importers:
         specifier: ^11.0.0
         version: 11.5.0
 
-  packages/protocol: {}
+  packages/protocol:
+    devDependencies:
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
 
 packages:
 
