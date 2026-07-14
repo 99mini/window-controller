@@ -4,8 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "tsc -b && vite build",
-    "check": "tsc -b --pretty false",
+    "build": "tsc && vite build",
+    "check": "tsc --pretty false",
     "dev": "vite --host"
   },
   "dependencies": {

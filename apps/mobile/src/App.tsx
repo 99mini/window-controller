@@ -37,10 +37,14 @@ export function App() {
 
   const [host, setHost] = useState(savedServer.host);
   const [port, setPort] = useState(savedServer.port);
-  const [deviceName, setDeviceName] = useState(savedSession?.deviceName ?? "My Phone");
+  const [deviceName, setDeviceName] = useState(
+    savedSession?.deviceName ?? "My Phone",
+  );
   const [pairCode, setPairCode] = useState("");
   const [view, setView] = useState<View>("setup");
-  const [statusText, setStatusText] = useState(savedSession ? "Connecting..." : "");
+  const [statusText, setStatusText] = useState(
+    savedSession ? "Connecting..." : "",
+  );
   const [serverName, setServerName] = useState("");
 
   const socketRef = useRef<WebSocket | null>(null);
@@ -72,7 +76,11 @@ export function App() {
     socket.addEventListener("open", () => {
       const session = sessionRef.current;
       if (session) {
-        sendMessage({ type: "auth", deviceId: session.deviceId, token: session.token });
+        sendMessage({
+          type: "auth",
+          deviceId: session.deviceId,
+          token: session.token,
+        });
         setStatusText("Authenticating...");
       } else {
         setView("pairing");
@@ -169,7 +177,10 @@ export function App() {
           </label>
           <label>
             Device name
-            <input value={deviceName} onChange={(e) => setDeviceName(e.target.value)} />
+            <input
+              value={deviceName}
+              onChange={(e) => setDeviceName(e.target.value)}
+            />
           </label>
           <div className="actions">
             <button onClick={connect}>Connect</button>
@@ -252,14 +263,22 @@ export function App() {
       <section className="button-row">
         <button
           onClick={() =>
-            sendMessage({ type: "mouse_button", button: "left", action: "click" })
+            sendMessage({
+              type: "mouse_button",
+              button: "left",
+              action: "click",
+            })
           }
         >
           Left Click
         </button>
         <button
           onClick={() =>
-            sendMessage({ type: "mouse_button", button: "right", action: "click" })
+            sendMessage({
+              type: "mouse_button",
+              button: "right",
+              action: "click",
+            })
           }
         >
           Right Click
@@ -268,12 +287,16 @@ export function App() {
 
       <section className="button-row">
         <button
-          onClick={() => sendMessage({ type: "scroll", deltaX: 0, deltaY: 120 })}
+          onClick={() =>
+            sendMessage({ type: "scroll", deltaX: 0, deltaY: 120 })
+          }
         >
           Scroll Up
         </button>
         <button
-          onClick={() => sendMessage({ type: "scroll", deltaX: 0, deltaY: -120 })}
+          onClick={() =>
+            sendMessage({ type: "scroll", deltaX: 0, deltaY: -120 })
+          }
         >
           Scroll Down
         </button>
