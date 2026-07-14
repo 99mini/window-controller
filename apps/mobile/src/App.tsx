@@ -278,6 +278,18 @@ export function App() {
           Scroll Down
         </button>
       </section>
+
+      <section className="button-row button-row-3">
+        <button onClick={() => sendMessage({ type: "volume", action: "down" })}>
+          Volume -
+        </button>
+        <button onClick={() => sendMessage({ type: "volume", action: "mute" })}>
+          Mute
+        </button>
+        <button onClick={() => sendMessage({ type: "volume", action: "up" })}>
+          Volume +
+        </button>
+      </section>
     </main>
   );
 }

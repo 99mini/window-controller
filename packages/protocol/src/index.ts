@@ -43,6 +43,11 @@ export type TextMessage = {
   value: string;
 };
 
+export type VolumeMessage = {
+  type: "volume";
+  action: "up" | "down" | "mute";
+};
+
 export type PingMessage = {
   type: "ping";
 };
@@ -55,6 +60,7 @@ export type ClientMessage =
   | ScrollMessage
   | KeyMessage
   | TextMessage
+  | VolumeMessage
   | PingMessage;
 
 export type ServerMessage =

@@ -9,6 +9,7 @@ export type NativeDriver = {
   scroll(deltaX: number, deltaY: number): void;
   keyPress(key: string, action: "press" | "down" | "up", modifiers: ModifierKey[]): void;
   textInput(text: string): void;
+  volume(action: "up" | "down" | "mute"): void;
 };
 
 function createMockDriver(): NativeDriver {
@@ -18,6 +19,7 @@ function createMockDriver(): NativeDriver {
     scroll(deltaX, deltaY) { console.log("[mock] scroll", { deltaX, deltaY }); },
     keyPress(key, action, modifiers) { console.log("[mock] key", { key, action, modifiers }); },
     textInput(text) { console.log("[mock] text", { text }); },
+    volume(action) { console.log("[mock] volume", { action }); },
   };
 }
 

@@ -81,6 +81,10 @@ input {
   gap: 12px;
 }
 
+.button-row-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .actions button,
 .button-row button {
   min-height: 56px;

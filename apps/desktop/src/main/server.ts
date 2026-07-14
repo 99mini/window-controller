@@ -172,6 +172,7 @@ export async function startServer(
           driver.keyPress(message.key, message.action, message.modifiers ?? ([] as ModifierKey[]));
           break;
         case "text": driver.textInput(message.value); break;
+        case "volume": driver.volume(message.action); break;
       }
     });
 

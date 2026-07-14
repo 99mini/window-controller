@@ -57,6 +57,13 @@ WORD ModifierVk(const std::string& modifier) {
   if (modifier == "meta") return VK_LWIN;
   return 0;
 }
+
+WORD VolumeVk(const std::string& action) {
+  if (action == "up") return VK_VOLUME_UP;
+  if (action == "down") return VK_VOLUME_DOWN;
+  if (action == "mute") return VK_VOLUME_MUTE;
+  return 0;
+}
 #endif
 
 Napi::Value MoveMouse(const Napi::CallbackInfo& info) {
@@ -144,12 +151,26 @@ Napi::Value TextInput(const Napi::CallbackInfo& info) {
   return env.Undefined();
 }
 
+Napi::Value Volume(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+#ifdef _WIN32
+  std::string action = info[0].As<Napi::String>().Utf8Value();
+  WORD vk = VolumeVk(action);
+  if (vk != 0) {
+    SendKey(vk, false);
+    SendKey(vk, true);
+  }
+#endif
+  return env.Undefined();
+}
+
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
   exports.Set("moveMouse", Napi::Function::New(env, MoveMouse));
   exports.Set("mouseButton", Napi::Function::New(env, MouseButton));
   exports.Set("scroll", Napi::Function::New(env, Scroll));
   exports.Set("keyPress", Napi::Function::New(env, KeyPress));
   exports.Set("textInput", Napi::Function::New(env, TextInput));
+  exports.Set("volume", Napi::Function::New(env, Volume));
   return exports;
 }
 
